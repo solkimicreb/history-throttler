@@ -14,7 +14,7 @@ History Throttler exposes an alternative to the native `history.pushState`, that
 
 - It has the exact same arguments as [history.pushState](https://developer.mozilla.org/en/docs/Web/API/History).
 
-- It calls `history.pushState`, if no new history item was added since the last repaint.
+- It calls `history.pushState`, if no new history item was added since the last repaint and the document is fully loaded.
 
 - It calls `history.replaceState` otherwise.
 

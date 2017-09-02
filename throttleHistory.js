@@ -2,8 +2,8 @@ const originalPushState = history.pushState
 let statePushedInCurrentTick = false
 
 export default function pushState () {
-  if (!statePushedInCurrentTick) {
-    // allow pushState if it is the first one since the last paint
+  if (!statePushedInCurrentTick && document.readyState === 'completed') {
+    // allow pushState if it is the first one since the last paint and the document is loaded
     originalPushState.apply(history, arguments)
     flagOn()
     requestAnimationFrame(flagOff)
