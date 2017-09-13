@@ -1,17 +1,54 @@
+const resolve = require('rollup-plugin-node-resolve')
+const commonjs = require('rollup-plugin-commonjs')
+const coverage = require('rollup-plugin-coverage')
+const alias = require('rollup-plugin-alias')
+
+const bundleType = process.env.BUNDLE_TYPE
+const bundlePath = bundleType ? `dist/${bundleType}.js` : 'src/index.js'
+
 module.exports = function (config) {
   config.set({
-    frameworks: ['mocha', 'chai'],
-    files: ['*.test.js'],
-    reporters: ['progress'],
+    frameworks: ['mocha', 'chai', 'source-map-support'],
+    files: ['tests/**/*.test.js'],
+    reporters: ['progress', 'coverage'],
     preprocessors: {
-      '*.test.js': ['webpack']
+      'tests/**/*.test.js': ['rollup']
     },
-    port: 9876,  // karma web server port
+    rollupPreprocessor: {
+      plugins: [
+        resolve(),
+        commonjs({
+          namedExports: {
+            'node_modules/chai/index.js': ['expect']
+          }
+        }),
+        coverage({
+          include: ['src/**/*.js']
+        })
+      ],
+      format: 'iife',
+      name: 'historyThrottler',
+      sourcemap: 'inline'
+    },
+    coverageReporter: {
+      dir: 'coverage',
+      reporters: [
+        { type: 'lcov', subdir: '.' },
+        { type: 'text-summary' }
+      ]
+    },
+    port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    browsers: ['ChromeHeadless'],
     autoWatch: false,
-    // singleRun: false, // Karma captures browsers, runs the tests and exits
-    concurrency: Infinity
+    concurrency: Infinity,
+    singleRun: true,
+    browsers: ['ChromeHeadlessNoSandbox'],
+    customLaunchers: {
+      ChromeHeadlessNoSandbox: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox']
+      }
+    }
   })
 }

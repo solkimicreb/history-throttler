@@ -2,7 +2,7 @@ const originalPushState = history.pushState
 let statePushedInCurrentTick = false
 
 export default function pushState () {
-  if (!statePushedInCurrentTick && document.readyState === 'completed') {
+  if (!statePushedInCurrentTick && document.readyState === 'complete') {
     // allow pushState if it is the first one since the last paint and the document is loaded
     originalPushState.apply(history, arguments)
     flagOn()
